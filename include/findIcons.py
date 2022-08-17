@@ -7,7 +7,7 @@ class icon:
     takeSnap = 1 #
     filters = 2 #
     search = 3 #
-    cancel = 4
+    cancel = 4 #
     arrowBack = 5
     camera = 6
     sendChat = 7
@@ -39,18 +39,29 @@ def findMinMax(cordList, XY : str) -> tuple:
 
     return (min, max)
 
-def findWhitePixels(im : Image) -> list:
+def findRGBPixels(im : Image, color : str) -> list:
     width, height = im.size
-    whiteCordsList = []
+    RGBCordsList = []
+
+    #supported colors
+    white = (230, 230, 230)
+    black = (27, 27, 27)
+
+    color = color.lower()
 
     for y in range(0, height):
         for x in range(0, width):
             RGBdata = im.getpixel((x, y))
             r, g, b, a = RGBdata
-            if (r > 230 and g > 230 and b > 230):
-                whiteCordsList.append((x, y))
 
-    return whiteCordsList
+            if color == "black":
+                if (r < black[0] and g < black[1] and b < black[2]):
+                    RGBCordsList.append((x, y))
+            elif color == "white":
+                if (r > white[0] and g > white[1] and b > white[2]):
+                    RGBCordsList.append((x, y))
+
+    return RGBCordsList
 
 def printPixels(cordList, im):
     newImg = im
@@ -138,18 +149,31 @@ def getSearchIcon(whiteCordList, img : Image):
     searchIcon = takeCroppedScreenShotOfIcon(searchIconPixelsCords, img)
     searchIcon.save("tempImg/searchIcon.png")
 
-def getCancelIcon():
-    #black pixel 27, 27, 27
-    return None
+def getCancelIcon(img : Image):
+    blackPixelCords = findRGBPixels(img, "black")
+    # printPixels(blackPixelCords, img)
+
+    cancelIconCords = []
+    width, height = img.size
+
+    for i, val in enumerate(blackPixelCords):
+        x, y = blackPixelCords[i]
+        if x > width / 2 and y < height / 2:
+            cancelIconCords.append(blackPixelCords[i])
+
+    cancelIcon = takeCroppedScreenShotOfIcon(cancelIconCords, img)
+    cancelIcon.save("tempImg/cancelIcon.png")
+
+
+# def getArrowBackIcon(img : Image):
 
 
 def main():
-    imgPath = 'phone1/phone1.png'
-    img = Image.open(imgPath)
-    width, height = img.size
+    imgPath = ['phone1/phone1.png', "phone1/phone2.png", "phone1/phone3.png", "phone1/phone4.png"]
+    img = Image.open(imgPath[0])
     global allIconList
 
-    whitePixelsCords = findWhitePixels(img)
+    whitePixelsCords = findRGBPixels(img, "white")
 
     findFirstThreeIcons(whitePixelsCords, img)
 
@@ -165,6 +189,11 @@ def main():
     filtersIcon.save("tempImg/filtersIcon.png")
 
     getSearchIcon(whitePixelsCords, img)
+
+    img = Image.open(imgPath[1])
+    getCancelIcon(img)
+
+    img = Image.open(imgPath[2])
 
 
 if __name__ == "__main__":
