@@ -7,10 +7,7 @@ class icon:
     filters = 2
     search = 3
 
-def findPartLength(cordList) -> int:
-    # Divide the bottom half into three section with the memories icon 
-    # least x, and the the smile greastest x
-
+def findMinMax(cordList) -> tuple:
     minX, maxX = 10000, 0
 
     for i, val in enumerate(cordList):
@@ -22,11 +19,8 @@ def findPartLength(cordList) -> int:
 
     print("MinX: %d\nMaxX: %d" %(minX, maxX))
 
-    partLength = (maxX - minX) / 3
+    return (minX, maxX)
 
-    print("Length: %d" % partLength)
-
-    return round(partLength), (minX, maxX)
 
 def findWhitePixels(im : Image) -> list:
     width, height = im.size
@@ -50,7 +44,6 @@ def printPixels(cordList, im):
 
 allIconList = []
 
-
 def findFirstThreeIcons(whiteCordList, img):
     width, height = img.size
     bottomWhitePixelsCords = []
@@ -60,7 +53,10 @@ def findFirstThreeIcons(whiteCordList, img):
         if y > height * 3 / 4:
             bottomWhitePixelsCords.append(whiteCordList[i])
 
-    thirdLength, minmax = findPartLength(bottomWhitePixelsCords)
+    min, max = findMinMax(bottomWhitePixelsCords)
+    thirdLength = (max - min) / 3
+
+
     global allIconList
 
     allIconList = [[], [], []]
@@ -68,14 +64,40 @@ def findFirstThreeIcons(whiteCordList, img):
 
     for i, val in enumerate(bottomWhitePixelsCords):
         x, y = bottomWhitePixelsCords[i]
-        minimum, maximum = minmax
 
-        # if x > 99 and x < 295:
-        #     allIconList[thirdSection].append(bottomWhitePixelsCords[i])
         for thirdSection in range(0, 3):
-            if (x > minimum + (thirdLength * thirdSection) and 
-            x < minimum + (thirdLength * (thirdSection + 1))):
+            if (x > min + (thirdLength * thirdSection) and 
+            x < min + (thirdLength * (thirdSection + 1))):
                 allIconList[thirdSection].append(bottomWhitePixelsCords[i])
+
+
+def editThreeSections():
+    global allIconList
+
+    min, max = findMinMax(allIconList[icon.memories])
+    oneHalf = (max + min) / 2
+    tmpList = []
+
+    for i, val in enumerate(allIconList[icon.memories]):
+        x, y = allIconList[icon.memories][i]
+        if x < oneHalf:
+            tmpList.append(allIconList[icon.memories][i])
+
+    allIconList[icon.memories] = tmpList
+
+    min, max = findMinMax(allIconList[icon.filters])
+    oneHalf = (max + min) / 2
+    tmpList = []
+
+    for i, val in enumerate(allIconList[icon.filters]):
+        x, y = allIconList[icon.filters][i]
+        if x > oneHalf:
+            tmpList.append(allIconList[icon.filters][i])
+
+    allIconList[icon.filters] = tmpList
+
+
+
 
 def main():
     imgPath = 'phone1/phone1.png'
@@ -86,7 +108,9 @@ def main():
     whitePixelsCords = findWhitePixels(img)
 
     findFirstThreeIcons(whitePixelsCords, img)
-    printPixels(allIconList[icon.filters], img)
+    editThreeSections()
+
+    printPixels(allIconList[icon.takeSnap], img)
 
 
 if __name__ == "__main__":
