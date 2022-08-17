@@ -3,36 +3,41 @@ import pyautogui
 from PIL import Image, ImageDraw 
 
 class icon:
-    memories = 0
-    takeSnap = 1
-    filters = 2
-    search = 3
+    memories = 0 #
+    takeSnap = 1 #
+    filters = 2 #
+    search = 3 #
+    cancel = 4
+    arrowBack = 5
+    camera = 6
+    sendChat = 7
+    send = 8
 
 def findMinMax(cordList, XY : str) -> tuple:
     min, max = 10000, 0
 
-    XY = XY.lower()
+    XY = XY.upper()
 
-    if XY == "x":
+    if XY == "X":
         for i, val in enumerate(cordList):
             x, y = cordList[i]
             if x > max:
                 max = x
             elif x < min:
                 min = x
-    else:
+    elif XY == "Y":
         for i, val in enumerate(cordList):
             x, y = cordList[i]
             if y > max:
                 max = y
-            elif x < min:
+            elif y < min:
                 min = y
+    else:
+        return None
 
-
-    print("Min: %d\nMax: %d" %(min, max))
+    print("Min%s: %d\nMax%s: %d" %(XY, min, XY, max))
 
     return (min, max)
-
 
 def findWhitePixels(im : Image) -> list:
     width, height = im.size
@@ -82,7 +87,7 @@ def editThreeSections():
     allIconList[icon.filters] = tmpList
 
 
-def findFirstThreeIcons(whiteCordList, img):
+def findFirstThreeIcons(whiteCordList, img : Image):
     width, height = img.size
     bottomWhitePixelsCords = []
 
@@ -111,9 +116,31 @@ def findFirstThreeIcons(whiteCordList, img):
     editThreeSections()
 
 
-# def takeCroppedScreenShotOfIcon(cordList):
+def takeCroppedScreenShotOfIcon(cordList, img : Image) -> Image:
+    minX, maxX = findMinMax(cordList, "x")
+    minY, maxY = findMinMax(cordList, "y")
 
- 
+    box = (minX, minY, maxX, maxY)
+    newImg = img.crop(box)
+
+    return newImg
+
+
+def getSearchIcon(whiteCordList, img : Image):
+    width, height = img.size
+    searchIconPixelsCords = []
+
+    for i, val in enumerate(whiteCordList):
+        x, y = whiteCordList[i]
+        if y < height / 2 and x < width / 2:
+            searchIconPixelsCords.append(whiteCordList[i])
+
+    searchIcon = takeCroppedScreenShotOfIcon(searchIconPixelsCords, img)
+    searchIcon.save("tempImg/searchIcon.png")
+
+def getCancelIcon():
+    #black pixel 27, 27, 27
+    return None
 
 
 def main():
@@ -126,7 +153,18 @@ def main():
 
     findFirstThreeIcons(whitePixelsCords, img)
 
-    printPixels(allIconList[icon.filters], img)
+    # printPixels(allIconList[icon.filters], img)
+
+    memoriesIcon = takeCroppedScreenShotOfIcon(allIconList[icon.memories], img)
+    memoriesIcon.save("tempImg/memoriesIcon.png")
+
+    takeSnapIcon = takeCroppedScreenShotOfIcon(allIconList[icon.takeSnap], img)
+    takeSnapIcon.save("tempImg/takeSnapIcon.png")
+
+    filtersIcon = takeCroppedScreenShotOfIcon(allIconList[icon.filters], img)
+    filtersIcon.save("tempImg/filtersIcon.png")
+
+    getSearchIcon(whitePixelsCords, img)
 
 
 if __name__ == "__main__":
