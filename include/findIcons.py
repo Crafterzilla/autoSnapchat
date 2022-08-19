@@ -8,10 +8,12 @@ class icon:
     filters = 2 #
     search = 3 #
     cancel = 4 #
-    arrowBack = 5
-    camera = 6
-    sendChat = 7
-    send = 8
+    phone = 5
+    videoCall = 6
+    arrowBack = 7
+    camera = 8
+    sendChat = 9
+    send = 10
 
 def findMinMax(cordList, XY : str) -> tuple:
     min, max = 10000, 0
@@ -45,7 +47,8 @@ def findRGBPixels(im : Image, color : str) -> list:
 
     #supported colors
     white = (230, 230, 230)
-    black = (27, 27, 27)
+    # black = (27, 27, 27)
+    black = (56, 56, 56)
 
     color = color.lower()
 
@@ -72,30 +75,30 @@ def printPixels(cordList, im):
 
 allIconList = []
 
-def editThreeSections():
+def editThreeSections(icon1, icon3):
     global allIconList
 
-    min, max = findMinMax(allIconList[icon.memories], "x")
+    min, max = findMinMax(allIconList[icon1], "x")
     oneHalf = (max + min) / 2
     tmpList = []
 
-    for i, val in enumerate(allIconList[icon.memories]):
-        x, y = allIconList[icon.memories][i]
+    for i, val in enumerate(allIconList[icon1]):
+        x, y = allIconList[icon1][i]
         if x < oneHalf:
-            tmpList.append(allIconList[icon.memories][i])
+            tmpList.append(allIconList[icon1][i])
 
-    allIconList[icon.memories] = tmpList
+    allIconList[icon1] = tmpList
 
-    min, max = findMinMax(allIconList[icon.filters], "x")
+    min, max = findMinMax(allIconList[icon3], "x")
     oneHalf = (max + min) / 2
     tmpList = []
 
-    for i, val in enumerate(allIconList[icon.filters]):
-        x, y = allIconList[icon.filters][i]
+    for i, val in enumerate(allIconList[icon3]):
+        x, y = allIconList[icon3][i]
         if x > oneHalf:
-            tmpList.append(allIconList[icon.filters][i])
+            tmpList.append(allIconList[icon3][i])
 
-    allIconList[icon.filters] = tmpList
+    allIconList[icon3] = tmpList
 
 
 def findFirstThreeIcons(whiteCordList, img : Image):
@@ -113,7 +116,7 @@ def findFirstThreeIcons(whiteCordList, img : Image):
 
     global allIconList
 
-    allIconList = [[], [], []]
+    allIconList = [[], [], [], [], [], [], [], [], [], []]
     thirdSection = 0
 
     for i, val in enumerate(bottomWhitePixelsCords):
@@ -123,9 +126,9 @@ def findFirstThreeIcons(whiteCordList, img : Image):
             if (x > min + (thirdLength * thirdSection) and 
             x < min + (thirdLength * (thirdSection + 1))):
                 allIconList[thirdSection].append(bottomWhitePixelsCords[i])
+                break
         
-    editThreeSections()
-
+    editThreeSections(icon.memories, icon.filters)
 
 def takeCroppedScreenShotOfIcon(cordList, img : Image) -> Image:
     minX, maxX = findMinMax(cordList, "x")
@@ -135,7 +138,6 @@ def takeCroppedScreenShotOfIcon(cordList, img : Image) -> Image:
     newImg = img.crop(box)
 
     return newImg
-
 
 def getSearchIcon(whiteCordList, img : Image):
     width, height = img.size
@@ -165,7 +167,39 @@ def getCancelIcon(img : Image):
     cancelIcon.save("tempImg/cancelIcon.png")
 
 
-# def getArrowBackIcon(img : Image):
+def getArrowBackIcon(img : Image):
+    blackPixelCords = findRGBPixels(img, "black")
+    
+    tmpCords = []
+    width, height = img.size    
+
+    for i, val in enumerate(blackPixelCords):
+        x, y = blackPixelCords[i]
+        if x > width / 2 and y < height / 2:
+            tmpCords.append(blackPixelCords[i])
+
+    # printPixels(tmpCords, img)
+
+
+    min, max = findMinMax(tmpCords, "x")
+    thirdLength = (max - min) / 3
+
+    global allIconList
+    thirdSection = 0
+
+    for i, val in enumerate(tmpCords):
+        x, y = tmpCords[i]
+
+        j = 0
+        for thirdSection in range(icon.phone, icon.arrowBack + 1):
+            if (x > min + (thirdLength * j) and 
+            x < min + (thirdLength * (j + 1))):
+                allIconList[thirdSection].append(tmpCords[i])
+                break
+            j += 1
+
+    # printPixels(allIconList[icon.videoCall], img)
+
 
 
 def main():
@@ -195,6 +229,16 @@ def main():
 
     img = Image.open(imgPath[2])
 
+    getArrowBackIcon(img)
+
+    arrowBackIcon = takeCroppedScreenShotOfIcon(allIconList[icon.arrowBack], img)
+    arrowBackIcon.save("tempImg/arrowBackIcon.png")
+
+    phoneIcon = takeCroppedScreenShotOfIcon(allIconList[icon.phone], img)
+    phoneIcon.save("tempImg/phoneIcon.png")
+
+    videoCallIcon = takeCroppedScreenShotOfIcon(allIconList[icon.videoCall], img)
+    videoCallIcon.save("tempImg/videoCallIcon.png")
 
 if __name__ == "__main__":
     main()
