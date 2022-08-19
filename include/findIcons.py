@@ -1,4 +1,3 @@
-from ast import Str
 import pyautogui
 from PIL import Image, ImageDraw 
 
@@ -12,8 +11,8 @@ class icon:
     videoCall = 6
     arrowBack = 7
     camera = 8
-    sendChat = 9
-    send = 10
+    chatBox = 9
+    sendChat = 10
 
 def findMinMax(cordList, XY : str) -> tuple:
     min, max = 10000, 0
@@ -46,9 +45,12 @@ def findRGBPixels(im : Image, color : str) -> list:
     RGBCordsList = []
 
     #supported colors
-    white = (230, 230, 230)
+    white = (240, 240, 240)
     # black = (27, 27, 27)
     black = (56, 56, 56)
+
+    grey1 = (230, 230, 230)
+    grey2 = (240, 240, 240)
 
     color = color.lower()
 
@@ -62,6 +64,10 @@ def findRGBPixels(im : Image, color : str) -> list:
                     RGBCordsList.append((x, y))
             elif color == "white":
                 if (r > white[0] and g > white[1] and b > white[2]):
+                    RGBCordsList.append((x, y))
+            elif color == "grey":
+                if ((r > grey1[0] and r < grey2[0]) and (g > grey1[1] and g < grey2[1])
+                and (b > grey1[2] and b < grey2[2])):
                     RGBCordsList.append((x, y))
 
     return RGBCordsList
@@ -166,7 +172,6 @@ def getCancelIcon(img : Image):
     cancelIcon = takeCroppedScreenShotOfIcon(cancelIconCords, img)
     cancelIcon.save("tempImg/cancelIcon.png")
 
-
 def getArrowBackIcon(img : Image):
     blackPixelCords = findRGBPixels(img, "black")
     
@@ -198,8 +203,69 @@ def getArrowBackIcon(img : Image):
                 break
             j += 1
 
-    # printPixels(allIconList[icon.videoCall], img)
+def getCameraAndChatBox(img : Image):
+    greyPixelCords = findRGBPixels(img, "grey")
+    whitePixelCords = findRGBPixels(img, "white")
 
+    #get rid of all grey pixels at the top
+
+    width, height = img.size
+    tmpPixelCords = []
+
+    for i, val in enumerate(greyPixelCords):
+        x, y = greyPixelCords[i]
+        if y > height / 2 and x < width / 2:
+            tmpPixelCords.append(greyPixelCords[i])
+
+    greyPixelCords = tmpPixelCords
+    minGreyY, maxGreyY = findMinMax(greyPixelCords, "y")
+
+    #Get rid of top line of grey pixels
+    tmpPixelCords = []
+    for i, val in enumerate(greyPixelCords):
+        x, y = greyPixelCords[i]
+        if (y != minGreyY):
+            tmpPixelCords.append(greyPixelCords[i])
+
+    greyPixelCords = tmpPixelCords
+
+
+    #edit whtie pixels accordingly
+        #take away all pixels above and below grey bars
+    minGreyY, maxGreyY = findMinMax(greyPixelCords, "y")
+    tmpPixelCords = []
+    for i, val in enumerate(whitePixelCords):
+        x, y = whitePixelCords[i]
+        if y > minGreyY and y < maxGreyY and x < width / 2:
+            tmpPixelCords.append(whitePixelCords[i])
+
+    whitePixelCords = tmpPixelCords
+
+        #take way remaining last white pixels
+
+    minWhiteX, maxWhiteX = findMinMax(whitePixelCords, "x")
+    middleWhiteX = (minWhiteX + maxWhiteX) / 2
+
+    tmpPixelCords = []
+    for i, val in enumerate(whitePixelCords):
+        x, y = whitePixelCords[i]
+        if x > middleWhiteX:
+            tmpPixelCords.append(whitePixelCords[i])
+
+    whitePixelCords = tmpPixelCords
+
+        #use remaining white pixels to seperate the two gray boxes
+
+    minWhiteX, maxWhiteX = findMinMax(whitePixelCords, "x")
+    middleWhiteX = (minWhiteX + maxWhiteX) / 2
+
+    global allIconList
+    for i, val in enumerate(greyPixelCords):
+        x, y = greyPixelCords[i]
+        if x > middleWhiteX:
+            allIconList[icon.chatBox].append(greyPixelCords[i])
+        else:
+            allIconList[icon.camera].append(greyPixelCords[i])
 
 
 def main():
@@ -239,6 +305,14 @@ def main():
 
     videoCallIcon = takeCroppedScreenShotOfIcon(allIconList[icon.videoCall], img)
     videoCallIcon.save("tempImg/videoCallIcon.png")
+
+    getCameraAndChatBox(img)
+
+    cameraIcon = takeCroppedScreenShotOfIcon(allIconList[icon.camera], img)
+    cameraIcon.save("tempImg/cameraIcon.png")
+
+    chatBoxIcon = takeCroppedScreenShotOfIcon(allIconList[icon.chatBox], img)
+    chatBoxIcon.save("tempImg/chatBoxIcon.png")
 
 if __name__ == "__main__":
     main()
