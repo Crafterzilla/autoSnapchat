@@ -12,7 +12,7 @@ class icon:
     arrowBack = 7
     camera = 8
     chatBox = 9
-    sendChat = 10
+    send = 10
 
 def findMinMax(cordList, XY : str) -> tuple:
     min, max = 10000, 0
@@ -268,7 +268,7 @@ def getCameraAndChatBox(img : Image):
             allIconList[icon.camera].append(greyPixelCords[i])
 
 
-def main():
+def getIcons():
     imgPath = ['phone1/phone1.png', "phone1/phone2.png", "phone1/phone3.png", "phone1/phone4.png"]
     img = Image.open(imgPath[0])
     global allIconList
@@ -314,5 +314,8 @@ def main():
     chatBoxIcon = takeCroppedScreenShotOfIcon(allIconList[icon.chatBox], img)
     chatBoxIcon.save("tempImg/chatBoxIcon.png")
 
-if __name__ == "__main__":
-    main()
+    img = Image.open("phone1/phone4.png")
+    img.save("tempImg/sendIcon.png")
+
+# if __name__ == "__main__":
+#     main()
