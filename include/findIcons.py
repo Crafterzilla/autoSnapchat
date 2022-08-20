@@ -36,7 +36,7 @@ def findMinMax(cordList, XY : str) -> tuple:
     else:
         return None
 
-    print("Min%s: %d\nMax%s: %d" %(XY, min, XY, max))
+    # print("Min%s: %d\nMax%s: %d" %(XY, min, XY, max))
 
     return (min, max)
 
@@ -154,8 +154,7 @@ def getSearchIcon(whiteCordList, img : Image):
         if y < height / 2 and x < width / 2:
             searchIconPixelsCords.append(whiteCordList[i])
 
-    searchIcon = takeCroppedScreenShotOfIcon(searchIconPixelsCords, img)
-    searchIcon.save("tempImg/searchIcon.png")
+    return searchIconPixelsCords
 
 def getCancelIcon(img : Image):
     blackPixelCords = findRGBPixels(img, "black")
@@ -169,8 +168,7 @@ def getCancelIcon(img : Image):
         if x > width / 2 and y < height / 2:
             cancelIconCords.append(blackPixelCords[i])
 
-    cancelIcon = takeCroppedScreenShotOfIcon(cancelIconCords, img)
-    cancelIcon.save("tempImg/cancelIcon.png")
+    return cancelIconCords
 
 def getArrowBackIcon(img : Image):
     blackPixelCords = findRGBPixels(img, "black")
@@ -268,8 +266,11 @@ def getCameraAndChatBox(img : Image):
             allIconList[icon.camera].append(greyPixelCords[i])
 
 
-def getIcons():
-    imgPath = ['phone1/phone1.png', "phone1/phone2.png", "phone1/phone3.png", "phone1/phone4.png"]
+def getIcons(phoneName : str):
+    imgPath = ["", "", "", ""]
+    for i, val in enumerate(imgPath):
+        imgPath[i] = "phones/{}/Screenshots/phone{}.png".format(phoneName, str(i + 1))
+
     img = Image.open(imgPath[0])
     global allIconList
 
@@ -277,45 +278,53 @@ def getIcons():
 
     findFirstThreeIcons(whitePixelsCords, img)
 
-    # printPixels(allIconList[icon.filters], img)
-
+    #Get memories icon
     memoriesIcon = takeCroppedScreenShotOfIcon(allIconList[icon.memories], img)
-    memoriesIcon.save("tempImg/memoriesIcon.png")
+    memoriesIcon.save("phones/{}/icons/memoriesIcon.png".format(phoneName))
 
+    #Get take snap icon
     takeSnapIcon = takeCroppedScreenShotOfIcon(allIconList[icon.takeSnap], img)
-    takeSnapIcon.save("tempImg/takeSnapIcon.png")
+    takeSnapIcon.save("phones/{}/icons/takeSnapIcon.png".format(phoneName))
 
+    #Get filters icon
     filtersIcon = takeCroppedScreenShotOfIcon(allIconList[icon.filters], img)
-    filtersIcon.save("tempImg/filtersIcon.png")
+    filtersIcon.save("phones/{}/icons/filtersIcon.png".format(phoneName))
 
-    getSearchIcon(whitePixelsCords, img)
+    #Get search icon
+    searchIconCords = getSearchIcon(whitePixelsCords, img)
+    searchIcon = takeCroppedScreenShotOfIcon(searchIconCords, img)
+    searchIcon.save("phones/{}/icons/searchIcon.png".format(phoneName))
 
+    #get cancel icon
     img = Image.open(imgPath[1])
-    getCancelIcon(img)
+    cancelIconCords = getCancelIcon(img)
+    cancelIcon = takeCroppedScreenShotOfIcon(cancelIconCords, img)
+    cancelIcon.save("phones/{}/icons/cancelIcon.png".format(phoneName))
 
+    #get arrowback icon
     img = Image.open(imgPath[2])
-
     getArrowBackIcon(img)
 
     arrowBackIcon = takeCroppedScreenShotOfIcon(allIconList[icon.arrowBack], img)
-    arrowBackIcon.save("tempImg/arrowBackIcon.png")
+    arrowBackIcon.save("phones/{}/icons/arrowBackIcon.png".format(phoneName))
 
+    #get phone icon
     phoneIcon = takeCroppedScreenShotOfIcon(allIconList[icon.phone], img)
-    phoneIcon.save("tempImg/phoneIcon.png")
+    phoneIcon.save("phones/{}/icons/phoneIcon.png".format(phoneName))
 
+    #get video call icon
     videoCallIcon = takeCroppedScreenShotOfIcon(allIconList[icon.videoCall], img)
-    videoCallIcon.save("tempImg/videoCallIcon.png")
+    videoCallIcon.save("phones/{}/icons/videoCallIcon.png".format(phoneName))
 
+    #get camera icon
     getCameraAndChatBox(img)
-
     cameraIcon = takeCroppedScreenShotOfIcon(allIconList[icon.camera], img)
-    cameraIcon.save("tempImg/cameraIcon.png")
+    cameraIcon.save("phones/{}/icons/cameraIcon.png".format(phoneName))
 
+    #get chatbox icon
     chatBoxIcon = takeCroppedScreenShotOfIcon(allIconList[icon.chatBox], img)
-    chatBoxIcon.save("tempImg/chatBoxIcon.png")
+    chatBoxIcon.save("phones/{}/icons/chatBoxIcon.png".format(phoneName))
 
-    img = Image.open("phone1/phone4.png")
-    img.save("tempImg/sendIcon.png")
-
-# if __name__ == "__main__":
-#     main()
+    #get send icon
+    img = Image.open(imgPath[3])
+    img.save("phones/{}/icons/sendIcon.png".format(phoneName))
