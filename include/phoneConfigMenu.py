@@ -1,4 +1,3 @@
-import pyautogui
 import os
 from findIcons import getIcons
 from shutil import rmtree
@@ -95,6 +94,8 @@ def listPhones():
             print("{}.) {}".format(str(i + 1), phoneList[i]), end="") 
         print()
 
+        return phoneList
+
 def removePhone():
     with open("data/phones.txt", "r") as file:
         phoneList = file.readlines()
@@ -114,11 +115,6 @@ def removePhone():
         del phoneList[choice - 1]
 
         rmtree("phones/{}".format(phoneName))
-        # os.remove("phones/{}/icons/**".format(phoneName))
-        # os.remove("phone/{}/Screenshots/**".format(phoneName))
-        # os.rmdir("phones/{}/icons".format(phoneName))
-        # os.rmdir("phones/{}/Screenshots".format(phoneName))
-        # os.rmdir("phones/{}".format(phoneName))
 
         with open("data/phones.txt", "w") as newfile:
             for i in range(0, len(phoneList)):
@@ -128,8 +124,6 @@ def removePhone():
                 else:
                     newfile.write(phoneList[i] + "\n")
             
-
-
 def configurePhones():
 
     choice = 0
@@ -162,14 +156,13 @@ Configure Phone Options:
             case Option.RemovePhone:
                 removePhone()
                 break
-            case Option.ResetPhone:
-                print("Reset")
-                break
+            # case Option.ResetPhone:
+            #     print("Reset")
+            #     break
             case Option.GoBack:
-                print("Go BAck")
+                print("Going Back")
                 break
             case _:
                 print("Invaild Option. Choose one of the options above")
 
-
-configurePhones()
+# configurePhones()
