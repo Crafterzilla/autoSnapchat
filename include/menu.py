@@ -1,6 +1,7 @@
 import pyautogui
 import os
 from findIcons import getIcons
+from shutil import rmtree
 
 
 def addPhone():
@@ -62,7 +63,7 @@ The program will extract all the pixel data needed for the bot to find right coo
 Place those files into this directory:
 
 {}/Screenshots
-""".format(cwd, cwd))
+""".format(os.getcwd(), cwd))
 
     input("Once done press enter to continue and to check for files: ")
     
@@ -85,6 +86,48 @@ Place those files into this directory:
     getIcons(phoneName)
     print("{} profile created successfully!".format(phoneName))
 
+def listPhones():
+    with open("data/phones.txt", "r") as file:
+        phoneList = file.readlines()
+        
+        print("\n\nPhones:")
+        for i, val in enumerate(phoneList):
+            print("{}.) {}".format(str(i + 1), phoneList[i]), end="") 
+        print()
+
+def removePhone():
+    with open("data/phones.txt", "r") as file:
+        phoneList = file.readlines()
+
+        #get phone choice
+        choice = 0
+        while True:       
+            listPhones()
+            choice = int(input("Choose a phone to remove: "))
+            if choice < 1 or choice > len(phoneList):
+                print("Invaild choice. Choose a number between 1 and {}".format(str(len(phoneList))))
+            else:
+                break
+        
+        phoneName = phoneList[choice - 1]
+        phoneName = phoneName.strip()
+        del phoneList[choice - 1]
+
+        rmtree("phones/{}".format(phoneName))
+        # os.remove("phones/{}/icons/**".format(phoneName))
+        # os.remove("phone/{}/Screenshots/**".format(phoneName))
+        # os.rmdir("phones/{}/icons".format(phoneName))
+        # os.rmdir("phones/{}/Screenshots".format(phoneName))
+        # os.rmdir("phones/{}".format(phoneName))
+
+        with open("data/phones.txt", "w") as newfile:
+            for i in range(0, len(phoneList)):
+                phoneList[i] = phoneList[i].strip()
+                if i == len(phoneList) - 1:
+                    newfile.write(phoneList[i])
+                else:
+                    newfile.write(phoneList[i] + "\n")
+            
 
 
 def configurePhones():
@@ -92,12 +135,12 @@ def configurePhones():
     choice = 0
     while (choice < 1 or choice > 4):
         print("""
-    1.) List Phones
-    2.) Add Phone
-    3.) Remove Phone
-    4.) Reset A Phone Profile
-    5.) Go Back
-
+Configure Phone Options:
+1.) List Phones
+2.) Add Phone
+3.) Remove Phone
+4.) Reset A Phone Profile
+5.) Go Back
     """)
 
         choice = int(input("Type in choice number: "))
@@ -111,13 +154,13 @@ def configurePhones():
 
         match choice:
             case Option.List:
-                print("List")
+                listPhones()
                 break
             case Option.AddPhone:
-                print("Add")
+                addPhone()
                 break
             case Option.RemovePhone:
-                print("Renmove")
+                removePhone()
                 break
             case Option.ResetPhone:
                 print("Reset")
@@ -129,11 +172,4 @@ def configurePhones():
                 print("Invaild Option. Choose one of the options above")
 
 
-
-
-
-
-
-
-# configurePhones()
-addPhone()
+configurePhones()
