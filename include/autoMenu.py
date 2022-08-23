@@ -50,7 +50,7 @@ def choosePhone():
     choice = 0
     while True:
         choice = int(input("Choose a phone from the ones above: "))
-        if choice > 0 and choice < len(phoneList):
+        if choice > 0 and choice <= len(phoneList):
             break
         else:
             print("Invaild option. Choose an option from the ones listed above")
@@ -98,14 +98,15 @@ If you understand of all of the above, press enter to start autoSnapchat: """)
     pos[icon.search] = findCord("phones/{}/icons/searchIcon.png".format(phoneName))
 
     pyautogui.click(pos[icon.search].x, pos[icon.search].y, interval=0.5)
-    pyautogui.write("f_in202210", interval=0.25)
+    time.sleep(1.0)
+    pyautogui.write("Team Snapchat", interval=0.25)
 
     pos[icon.cancel] = findCord("phones/{}/icons/cancelIcon.png".format(phoneName))
     
     img = Image.open("phones/{}/Screenshots/phone2.png".format(phoneName))
     width, height = img.size
 
-    pos[icon.usernameBox] = (pos[icon.cancel].x, pos[icon.cancel].y + (height / 2))
+    pos[icon.usernameBox] = ((pos[icon.search][0] + pos[icon.cancel][0]) / 2, pos[icon.cancel].y + (height / 2))
 
     pyautogui.click(pos[icon.usernameBox][0], pos[icon.usernameBox][1])
 
@@ -119,18 +120,36 @@ If you understand of all of the above, press enter to start autoSnapchat: """)
 
     pos[icon.chatBox] = findCord("phones/{}/icons/chatBoxIcon.png".format(phoneName))
 
-    pyautogui.click(pos[icon.camera].x, pos[icon.camera].y, interval=0.5)
-    pyautogui.click(pos[icon.takeSnap].x, pos[icon.takeSnap].y, interval=0.5)
+    pyautogui.click(pos[icon.camera].x, pos[icon.camera].y, interval=1)
+    pyautogui.click(pos[icon.takeSnap].x, pos[icon.takeSnap].y, interval=1)
 
     pos[icon.send] = findCord("phones/{}/icons/sendIcon.png".format(phoneName))
 
-    pyautogui.click(pos[icon.send].x, pos[icon.send].y, interval=0.5)
-    pyautogui.click(pos[icon.arrowBack].x, pos[icon.arrowBack].y, interval=0.5)
-    pyautogui.click(pos[icon.cancel].x, pos[icon.cancel].y, interval=0.5)
+    pyautogui.click(pos[icon.send].x, pos[icon.send].y, interval=1)
+    pyautogui.click(pos[icon.arrowBack].x, pos[icon.arrowBack].y, interval=1)
+    pyautogui.click(pos[icon.cancel].x, pos[icon.cancel].y, interval=1)
 
 
     print("To shutdown the program, press crtl + c")
     return pos
+
+def spamChats(victimNames, phoneName, textToSend):
+    print("It is recommended for max speed to only go to one user")
+    pos = getCords(phoneName)
+
+
+    if len(victimNames) == 1:
+        pyautogui.click(pos[icon.search].x, pos[icon.search].y, interval=1)
+        pyautogui.write(victimNames[0], interval=0.25)
+        time.sleep(1.0)
+        pyautogui.click(pos[icon.usernameBox][0], pos[icon.usernameBox][1], interval=1)
+        pyautogui.moveTo(pos[icon.chatBox].x, pos[icon.chatBox].y)
+        while True:
+            pyautogui.write(textToSend)
+            pyautogui.press("enter")
+    else:
+        print("Spam only works for one user")
+
 
 def autoSendChats():
     victimNames = getUsers()
@@ -162,7 +181,7 @@ How do you want to auto send texts?
                 # addPhone()
                 break
             case send.spamThem:
-                print("Going Back")
+                spamChats(victimNames, phoneName, textToSend)
                 break
             case send.goBack:
                 print("Going back")
@@ -190,10 +209,10 @@ AutoSnap Options:
 
         match choice:
             case Option.sendSnaps:
-                autoSendChats()
+                # autoSendChats()
                 break
             case Option.sendChats:
-                # addPhone()
+                autoSendChats()
                 break
             case Option.goBack:
                 print("Going Back")
@@ -202,5 +221,4 @@ AutoSnap Options:
                 print("Invaild Option. Choose one of the options above")
 
 
-# autoMenu()
-getCords("GENY")
+autoMenu()
