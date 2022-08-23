@@ -1,3 +1,6 @@
+from cgitb import grey
+from enum import EnumMeta
+import enum
 import pyautogui
 from PIL import Image, ImageDraw 
 
@@ -49,7 +52,7 @@ def findRGBPixels(im : Image, color : str) -> list:
     # black = (27, 27, 27)
     black = (56, 56, 56)
 
-    grey1 = (230, 230, 230)
+    grey1 = (235, 237, 238)
     grey2 = (240, 240, 240)
 
     color = color.lower()
@@ -172,13 +175,54 @@ def getCancelIcon(img : Image):
 
 def getArrowBackIcon(img : Image):
     blackPixelCords = findRGBPixels(img, "black")
-    
+    greyPixelCords = findRGBPixels(img, "grey")
+
     tmpCords = []
     width, height = img.size    
 
+    #if there are width amount of x values that have the same y, remove all grey pixels above that y value
+
+    previousY = greyPixelCords[0][1]
+    xCounter = 0
+    middleGreyY = 0
+    for i, val in enumerate(greyPixelCords):
+        x, y = greyPixelCords[i]
+        if xCounter == width - 2:
+            middleGreyY = y
+            break
+        elif previousY == y:
+            xCounter += 1
+        else:
+            previousY = y
+            xCounter = 0
+
+    for i, val in enumerate(greyPixelCords):
+        x, y = greyPixelCords[i]
+        if y < middleGreyY and x > width / 2:
+            tmpCords.append(greyPixelCords[i])
+    
+    greyPixelCords = tmpCords
+
+    #remove any last lost remaining pixels
+
+    for i, val in enumerate(greyPixelCords):
+        x, y = greyPixelCords[i]
+        xCounter = 0
+        for j, val in enumerate(greyPixelCords):
+            xTmp, yTmp = greyPixelCords[j]
+            if xTmp == x:
+                xCounter += 1
+        if xCounter < 3:
+            del greyPixelCords[i]
+
+    greyMinX, greyMaxX = findMinMax(greyPixelCords, "x")
+    greyMinY, greyMaxY = findMinMax(greyPixelCords, "y")
+
+    print(greyMinX)
+    tmpCords = []
     for i, val in enumerate(blackPixelCords):
         x, y = blackPixelCords[i]
-        if x > width / 2 and y < height / 2:
+        if y < greyMaxY and x > greyMinX:
             tmpCords.append(blackPixelCords[i])
 
     # printPixels(tmpCords, img)
@@ -204,7 +248,6 @@ def getArrowBackIcon(img : Image):
 def getCameraAndChatBox(img : Image):
     greyPixelCords = findRGBPixels(img, "grey")
     whitePixelCords = findRGBPixels(img, "white")
-
     #get rid of all grey pixels at the top
 
     width, height = img.size
@@ -238,7 +281,6 @@ def getCameraAndChatBox(img : Image):
             tmpPixelCords.append(whitePixelCords[i])
 
     whitePixelCords = tmpPixelCords
-
         #take way remaining last white pixels
 
     minWhiteX, maxWhiteX = findMinMax(whitePixelCords, "x")
@@ -264,6 +306,7 @@ def getCameraAndChatBox(img : Image):
             allIconList[icon.chatBox].append(greyPixelCords[i])
         else:
             allIconList[icon.camera].append(greyPixelCords[i])
+
 
 
 def getIcons(phoneName : str):
@@ -328,3 +371,5 @@ def getIcons(phoneName : str):
     #get send icon
     img = Image.open(imgPath[3])
     img.save("phones/{}/icons/sendIcon.png".format(phoneName))
+
+getIcons("SAMSUNG")
