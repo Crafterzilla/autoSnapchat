@@ -125,9 +125,7 @@ def removePhone():
                     newfile.write(phoneList[i] + "\n")
             
 def configurePhones():
-
-    choice = 0
-    while (choice < 1 or choice > 4):
+    while True:
         print("""
 Configure Phone Options:
 1.) List Phones
@@ -136,8 +134,12 @@ Configure Phone Options:
 4.) Reset A Phone Profile
 5.) Go Back
     """)
-
-        choice = int(input("Type in choice number: "))
+        while True:
+            try:
+                choice = int(input("Type in choice number: "))
+                break
+            except ValueError:
+                print("Please type in an integer")
 
         class Option:
             List = 1
@@ -149,16 +151,14 @@ Configure Phone Options:
         match choice:
             case Option.List:
                 listPhones()
-                break
             case Option.AddPhone:
                 addPhone()
-                break
             case Option.RemovePhone:
                 removePhone()
                 break
-            # case Option.ResetPhone:
-            #     print("Reset")
-            #     break
+            case Option.ResetPhone:
+                print("Reset")
+                break
             case Option.GoBack:
                 print("Going Back")
                 break

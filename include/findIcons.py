@@ -366,5 +366,3 @@ def getIcons(phoneName : str):
     #get send icon
     img = Image.open(imgPath[3])
     img.save("phones/{}/icons/sendIcon.png".format(phoneName))
-
-getIcons("LG_STYLO")

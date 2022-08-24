@@ -279,8 +279,8 @@ def autoSendChats():
     textToSend = input("Write a message to send repeatedly: ")
 
     choice = 0
-    exit = False
-    while exit == False:
+
+    while True:
         print("""
 How do you want to auto send texts?
 1.) Send Randomly
@@ -299,16 +299,12 @@ How do you want to auto send texts?
             case send.random:
                 randomTimes = getRandomTimes() 
                 sendChatsAtSetTimes(randomTimes, victimNames, phoneName, textToSend)
-                break
             case send.setTime:
                 timesToSend = getTimes()
                 sendChatsAtSetTimes(timesToSend, victimNames, phoneName, textToSend)
-                break
             case send.spamThem:
                 spamChats(victimNames, phoneName, textToSend)
-                break
             case send.goBack:
-                exit = True
                 print("Going back")
                 break
             case _:
@@ -404,9 +400,8 @@ def sendSnapsAtSetTime(timesToSend : list, victimNames : list, phoneName : str):
 def autoSendSnaps():
     victimNames = getUsers()
     phoneName = choosePhone()
-    exit = False
 
-    while exit == False:
+    while True:
         print("""
 How do you want to send snaps?
 1.) Send Randomly
@@ -416,11 +411,12 @@ How do you want to send snaps?
 """)
 
         choice = 0
-        try:
-            choice = int(input("Type in choice number: "))
-        except ValueError:
-            print("Please type in an integer")
-            continue
+        while True:
+            try:
+                choice = int(input("Type in choice number: "))
+                break
+            except ValueError:
+                print("Please type in an integer")
 
         class send:
             random = 1
@@ -432,25 +428,20 @@ How do you want to send snaps?
             case send.random:
                 randomTimes = getRandomTimes() 
                 sendSnapsAtSetTime(randomTimes, victimNames, phoneName)
-                break
             case send.setTime:
                 timesToSend = getTimes()
                 sendSnapsAtSetTime(timesToSend, victimNames, phoneName)
-                break
             case send.spamThem:
                 spamSnaps(victimNames, phoneName)
-                break
             case send.goBack:
                 print("Going back")
-                exit = True
                 break
             case _:
                 print("Invaild Option. Choose one of the options above")
         
 def autoMenu():
     choice = 0
-    exit = False
-    while exit == False:
+    while True:
         print("""
 AutoSnap Options:
 1.) Auto send snaps
@@ -467,13 +458,10 @@ AutoSnap Options:
         match choice:
             case Option.sendSnaps:
                 autoSendSnaps()
-                break
             case Option.sendChats:
                 autoSendChats()
-                break
             case Option.goBack:
                 print("Going Back")
-                exit = True
                 break
             case _:
                 print("Invaild Option. Choose one of the options above")
