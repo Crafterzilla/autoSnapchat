@@ -1,7 +1,3 @@
-from cgitb import grey
-from enum import EnumMeta
-import enum
-import pyautogui
 from PIL import Image, ImageDraw 
 
 class icon:
@@ -52,8 +48,8 @@ def findRGBPixels(im : Image, color : str) -> list:
     # black = (27, 27, 27)
     black = (56, 56, 56)
 
-    grey1 = (235, 237, 238)
-    grey2 = (240, 240, 240)
+    grey1 = (232, 232, 232)
+    grey2 = (242, 242, 242)
 
     color = color.lower()
 
@@ -176,7 +172,6 @@ def getCancelIcon(img : Image):
 def getArrowBackIcon(img : Image):
     blackPixelCords = findRGBPixels(img, "black")
     greyPixelCords = findRGBPixels(img, "grey")
-
     tmpCords = []
     width, height = img.size    
 
@@ -204,21 +199,24 @@ def getArrowBackIcon(img : Image):
     greyPixelCords = tmpCords
 
     #remove any last lost remaining pixels
-
-    for i, val in enumerate(greyPixelCords):
-        x, y = greyPixelCords[i]
-        xCounter = 0
+    
+    for i in range(0, width):
+        tmpCords = []
         for j, val in enumerate(greyPixelCords):
-            xTmp, yTmp = greyPixelCords[j]
-            if xTmp == x:
-                xCounter += 1
-        if xCounter < 3:
-            del greyPixelCords[i]
+            x, y = greyPixelCords[j]
+            if x == i:
+                tmpCords.append(greyPixelCords[j])
+        if len(tmpCords) < 5 and len(tmpCords) != 0:
+            for j, val in enumerate(greyPixelCords):
+                x, y = greyPixelCords[j]
+                if x == i:
+                    del greyPixelCords[j]
+
+    # printPixels(greyPixelCords, img)
 
     greyMinX, greyMaxX = findMinMax(greyPixelCords, "x")
     greyMinY, greyMaxY = findMinMax(greyPixelCords, "y")
 
-    print(greyMinX)
     tmpCords = []
     for i, val in enumerate(blackPixelCords):
         x, y = blackPixelCords[i]
@@ -226,7 +224,6 @@ def getArrowBackIcon(img : Image):
             tmpCords.append(blackPixelCords[i])
 
     # printPixels(tmpCords, img)
-
 
     min, max = findMinMax(tmpCords, "x")
     thirdLength = (max - min) / 3
@@ -307,8 +304,6 @@ def getCameraAndChatBox(img : Image):
         else:
             allIconList[icon.camera].append(greyPixelCords[i])
 
-
-
 def getIcons(phoneName : str):
     imgPath = ["", "", "", ""]
     for i, val in enumerate(imgPath):
@@ -372,4 +367,4 @@ def getIcons(phoneName : str):
     img = Image.open(imgPath[3])
     img.save("phones/{}/icons/sendIcon.png".format(phoneName))
 
-getIcons("SAMSUNG")
+getIcons("LG_STYLO")
