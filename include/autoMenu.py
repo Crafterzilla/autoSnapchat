@@ -1,8 +1,6 @@
-from multiprocessing.sharedctypes import Value
-from secrets import choice
 import pyautogui
 from PIL import Image
-from phoneConfigMenu import listPhones
+from include.phoneConfigMenu import listPhones
 import time
 from datetime import datetime
 import random
@@ -68,7 +66,6 @@ def findCord(pathName):
         pos = pyautogui.locateCenterOnScreen(pathName, confidence=0.8)
         if pos != None:
             return pos
-
 
 def getCords(phoneName : str):
     pos = [[], [], [], [], [], [], [], [], [], [], [], []]
@@ -423,6 +420,7 @@ How do you want to send snaps?
             choice = int(input("Type in choice number: "))
         except ValueError:
             print("Please type in an integer")
+            continue
 
         class send:
             random = 1
@@ -479,6 +477,3 @@ AutoSnap Options:
                 break
             case _:
                 print("Invaild Option. Choose one of the options above")
-
-
-autoMenu()

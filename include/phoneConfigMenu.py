@@ -1,5 +1,5 @@
 import os
-from findIcons import getIcons
+from include.findIcons import getIcons
 from shutil import rmtree
 
 
