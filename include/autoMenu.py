@@ -1,5 +1,6 @@
+from multiprocessing.sharedctypes import Value
+from secrets import choice
 import pyautogui
-import keyboard
 from PIL import Image
 from phoneConfigMenu import listPhones
 import time
@@ -23,6 +24,7 @@ class icon:
 
 def getUsers():
     victims = []
+    print("For spamming features, you can only send to one user")
 
     print("For program to work, you must type in the recipient's username correctly")
 
@@ -79,7 +81,7 @@ It should like the first screenshot you took
 Doing so will ruin all the calculations of the program. While the random interval and 
 set time have a much lesser chance of getting banned,
 understand that spamming can get your account
-banned; I do not take resposibilty for that.
+banned; I do not take responsibility for that.
 
 If you understand of all of the above, press enter to start autoSnapchat: """)
 
@@ -138,7 +140,6 @@ If you understand of all of the above, press enter to start autoSnapchat: """)
     return pos
 
 def spamChats(victimNames, phoneName, textToSend):
-    print("It is recommended for max speed to only go to one user")
     pos = getCords(phoneName)
 
 
@@ -286,7 +287,8 @@ def autoSendChats():
     textToSend = input("Write a message to send repeatedly: ")
 
     choice = 0
-    while choice < 1 or choice > 2:
+    exit = False
+    while exit == False:
         print("""
 How do you want to auto send texts?
 1.) Send Randomly
@@ -314,6 +316,7 @@ How do you want to auto send texts?
                 spamChats(victimNames, phoneName, textToSend)
                 break
             case send.goBack:
+                exit = True
                 print("Going back")
                 break
             case _:
@@ -321,9 +324,108 @@ How do you want to auto send texts?
 
 
 
+def spamChats(victimName, phoneName):
+    speed = []
+    print("Spam speed's major bottleneck is your phone's/emulator's speed. Lower end devices")
+    print("should choose a slow while more higher end devices can choose to go faster")
+    
+    choice = 0
+    while True:
+        try:
+            choice = int(input("Fast, medium, slow (1, 2, 3): "))
+            if choice > 0 and choice <= 3:
+                break
+            else:
+                print("Choose a vaild number")
+        except ValueError:
+            print("Invaild Input. Type in an integer")
+
+    if choice == 1:
+        speed = [0.25, 0.5, 0.75] 
+    elif choice == 2:
+        speed = [0.5, 1, 1.5]
+    elif choice == 3:
+        speed = [2, 3, 3]
+
+    pos = getCords(phoneName)
+
+    if len(victimName) == 1:
+        pyautogui.click(pos[icon.search].x, pos[icon.search].y)
+        time.sleep(0.5)
+        pyautogui.write(victimName[0], interval=0.25)
+        time.sleep(0.5)
+        pyautogui.click(pos[icon.usernameBox][0], pos[icon.usernameBox][1])
+        time.sleep(3)
+        try:
+            while True:
+                pyautogui.click(pos[icon.camera].x, pos[icon.camera].y)
+                time.sleep(speed[0])
+                pyautogui.click(pos[icon.takeSnap].x, pos[icon.takeSnap].y)
+                time.sleep(speed[1])
+                pyautogui.click(pos[icon.send].x, pos[icon.send].y)
+                time.sleep(speed[2])
+        except pyautogui.FailSafeException or KeyboardInterrupt:
+            print("Stopping the spam to poor {}".format(victimName[0]))
+    else:
+        print("You can only spam to one user")
+                
+
+
+
+def autoSendSnaps():
+    victimNames = getUsers()
+    phoneName = choosePhone()
+    exit = False
+
+    while exit == False:
+        print("""
+How do you want to send snaps?
+1.) Send Randomly
+2.) Send at a set time per day
+3.) Fuck it...spam them HEHEEHEHEHEHEHE!!!!!!
+4.) Go back
+""")
+
+        choice = 0
+        try:
+            choice = int(input("Type in choice number: "))
+        except ValueError:
+            print("Please type in an integer")
+
+        class send:
+            random = 1
+            setTime = 2
+            spamThem = 3
+            goBack = 4
+
+        match choice:
+            case send.random:
+                randomTimes = getRandomTimes() 
+                # sendChatsAtSetTimes(randomTimes, victimNames, phoneName, textToSend)
+                break
+            case send.setTime:
+                timesToSend = getTimes()
+                # sendChatsAtSetTimes(timesToSend, victimNames, phoneName, textToSend)
+                break
+            case send.spamThem:
+                spamChats(victimNames, phoneName)
+                break
+            case send.goBack:
+                print("Going back")
+                exit = True
+                break
+            case _:
+                print("Invaild Option. Choose one of the options above")
+        
+
+
+
+
+
 def autoMenu():
     choice = 0
-    while choice < 1 or choice > 2:
+    exit = False
+    while exit == False:
         print("""
 AutoSnap Options:
 1.) Auto send snaps
@@ -339,13 +441,14 @@ AutoSnap Options:
 
         match choice:
             case Option.sendSnaps:
-                # autoSendChats()
+                autoSendSnaps()
                 break
             case Option.sendChats:
                 autoSendChats()
                 break
             case Option.goBack:
                 print("Going Back")
+                exit = True
                 break
             case _:
                 print("Invaild Option. Choose one of the options above")
