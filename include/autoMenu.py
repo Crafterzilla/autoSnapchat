@@ -241,6 +241,7 @@ def getRandomTimes():
     return times
  
 def sendChatsAtSetTimes(timesToSend, victimNames, phoneName, textToSend):
+    choice = ""
     while True:
         choice = input("Spam for a minute or send message once (1 or 2): ")
         if choice == "1" or choice == "2":
@@ -249,36 +250,30 @@ def sendChatsAtSetTimes(timesToSend, victimNames, phoneName, textToSend):
             print("Invaild input. Choose 1 or 2")
 
     pos = getCords(phoneName)
-
-    # print(timesToSend)
-    currentTime = datetime.now()
-    currentTime = str(currentTime.time())
-    currentHour = int(currentTime[0] + currentTime[1])
-    currentMinute = int(currentTime[3] + currentTime[4])
-
-    print("{}:{}".format(currentHour, currentMinute))
-
     printCurrentTime()
-    while True:
-        currentTime = datetime.now()
-        currentTime = str(currentTime.time())
-        currentHour = int(currentTime[0] + currentTime[1])
-        currentMinute = int(currentTime[3] + currentTime[4])
+    try:
+        while True:
+            currentTime = datetime.now()
+            currentTime = str(currentTime.time())
+            currentHour = int(currentTime[0] + currentTime[1])
+            currentMinute = int(currentTime[3] + currentTime[4])
 
-        for i, userTime in enumerate(timesToSend):
-            if userTime[0] == currentHour and userTime[1] == currentMinute:
-                for j, victim in enumerate(victimNames):
-                    pyautogui.click(pos[icon.search].x, pos[icon.search].y, interval=0.75)
-                    pyautogui.write(victim, interval=0.25)
-                    time.sleep(1.0)
-                    pyautogui.click(pos[icon.usernameBox][0], pos[icon.usernameBox][1], interval=0.75)
-                    time.sleep(0.5)
-                    pyautogui.write(textToSend, interval=0.25)
-                    pyautogui.press("enter")
-                    pyautogui.click(pos[icon.arrowBack].x, pos[icon.arrowBack].y, interval=0.5)
-                    pyautogui.click(pos[icon.cancel].x, pos[icon.cancel].y, interval=0.5)
-                if choice == "2":
-                    time.sleep(60)
+            for i, userTime in enumerate(timesToSend):
+                if userTime[0] == currentHour and userTime[1] == currentMinute:
+                    for j, victim in enumerate(victimNames):
+                        pyautogui.click(pos[icon.search].x, pos[icon.search].y, interval=0.75)
+                        pyautogui.write(victim, interval=0.25)
+                        time.sleep(1.0)
+                        pyautogui.click(pos[icon.usernameBox][0], pos[icon.usernameBox][1], interval=0.75)
+                        time.sleep(0.5)
+                        pyautogui.write(textToSend, interval=0.25)
+                        pyautogui.press("enter")
+                        pyautogui.click(pos[icon.arrowBack].x, pos[icon.arrowBack].y, interval=0.5)
+                        pyautogui.click(pos[icon.cancel].x, pos[icon.cancel].y, interval=0.5)
+                    if choice == "2":
+                        time.sleep(60)
+    except pyautogui.FailSafeException or KeyboardInterrupt:
+        print("Stopping the program...")
 
 def autoSendChats():
     victimNames = getUsers()
@@ -322,9 +317,7 @@ How do you want to auto send texts?
             case _:
                 print("Invaild Option. Choose one of the options above")
 
-
-
-def spamChats(victimName, phoneName):
+def spamSnaps(victimName, phoneName):
     speed = []
     print("Spam speed's major bottleneck is your phone's/emulator's speed. Lower end devices")
     print("should choose a slow while more higher end devices can choose to go faster")
@@ -369,8 +362,47 @@ def spamChats(victimName, phoneName):
     else:
         print("You can only spam to one user")
                 
+def sendSnapsAtSetTime(timesToSend : list, victimNames : list, phoneName : str):
+    choice = ""
+    while True:
+        choice = input("Spam for a minute or send message once (1 or 2): ")
+        if choice == "1" or choice == "2":
+            break
+        else:
+            print("Invaild input. Choose 1 or 2")
 
+    pos = getCords(phoneName)
+    printCurrentTime()
+    try:
+        while True:
+            currentTime = datetime.now()
+            currentTime = str(currentTime.time())
+            currentHour = int(currentTime[0] + currentTime[1])
+            currentMinute = int(currentTime[3] + currentTime[4])
 
+            for i, userTime in enumerate(timesToSend):
+                if userTime[0] == currentHour and userTime[1] == currentMinute:
+                    for j, victim in enumerate(victimNames):
+                        time.sleep(1)
+                        pyautogui.click(pos[icon.search].x, pos[icon.search].y, interval=0.75)
+                        pyautogui.write(victim, interval=0.25)
+                        time.sleep(2)
+                        pyautogui.click(pos[icon.usernameBox][0], pos[icon.usernameBox][1], interval=0.75)
+                        time.sleep(2)
+                        pyautogui.click(pos[icon.camera].x, pos[icon.camera].y)
+                        time.sleep(2)
+                        pyautogui.click(pos[icon.takeSnap].x, pos[icon.takeSnap].y)
+                        time.sleep(2)
+                        pyautogui.click(pos[icon.send].x, pos[icon.send].y)
+                        time.sleep(2)
+                        pyautogui.click(pos[icon.arrowBack].x, pos[icon.arrowBack].y)
+                        time.sleep(2)
+                        pyautogui.click(pos[icon.cancel].x, pos[icon.cancel].y, interval=0.5)
+                        time.sleep(2)
+                    if choice == "2":
+                        time.sleep(60)
+    except pyautogui.FailSafeException or KeyboardInterrupt:
+            print("Stopping the program...")
 
 def autoSendSnaps():
     victimNames = getUsers()
@@ -401,14 +433,14 @@ How do you want to send snaps?
         match choice:
             case send.random:
                 randomTimes = getRandomTimes() 
-                # sendChatsAtSetTimes(randomTimes, victimNames, phoneName, textToSend)
+                sendSnapsAtSetTime(randomTimes, victimNames, phoneName)
                 break
             case send.setTime:
                 timesToSend = getTimes()
-                # sendChatsAtSetTimes(timesToSend, victimNames, phoneName, textToSend)
+                sendSnapsAtSetTime(timesToSend, victimNames, phoneName)
                 break
             case send.spamThem:
-                spamChats(victimNames, phoneName)
+                spamSnaps(victimNames, phoneName)
                 break
             case send.goBack:
                 print("Going back")
@@ -417,11 +449,6 @@ How do you want to send snaps?
             case _:
                 print("Invaild Option. Choose one of the options above")
         
-
-
-
-
-
 def autoMenu():
     choice = 0
     exit = False
