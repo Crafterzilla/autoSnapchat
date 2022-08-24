@@ -4,6 +4,8 @@ from PIL import Image
 from phoneConfigMenu import listPhones
 import time
 from datetime import datetime
+import random
+
 
 class icon:
     memories = 0 #
@@ -219,10 +221,25 @@ def getTimes():
         times[i] = (hour, min)
 
     return times
-    
-def sendChatsAtSetTimes(victimNames, phoneName, textToSend):
-    timesToSend = getTimes()
 
+def getRandomTimes():
+    randomAmount = 0
+    while True:
+        try:
+            randomAmount = int(input("Type in amount of times to send messege per day: "))
+            break
+        except ValueError:
+            print("Invaild Input. Type in an integer")
+
+    times = []
+    for i in range(0, randomAmount):
+        ranHour = random.randint(0, 23)
+        ranMin = random.randint(0, 59)
+        times.append((ranHour, ranMin))
+
+    return times
+ 
+def sendChatsAtSetTimes(timesToSend, victimNames, phoneName, textToSend):
     while True:
         choice = input("Spam for a minute or send message once (1 or 2): ")
         if choice == "1" or choice == "2":
@@ -232,7 +249,7 @@ def sendChatsAtSetTimes(victimNames, phoneName, textToSend):
 
     pos = getCords(phoneName)
 
-    print(timesToSend)
+    # print(timesToSend)
     currentTime = datetime.now()
     currentTime = str(currentTime.time())
     currentHour = int(currentTime[0] + currentTime[1])
@@ -262,7 +279,6 @@ def sendChatsAtSetTimes(victimNames, phoneName, textToSend):
                 if choice == "2":
                     time.sleep(60)
 
-
 def autoSendChats():
     victimNames = getUsers()
     phoneName = choosePhone()
@@ -287,10 +303,12 @@ How do you want to auto send texts?
 
         match choice:
             case send.random:
-                # autoSendChats()
+                randomTimes = getRandomTimes() 
+                sendChatsAtSetTimes(randomTimes, victimNames, phoneName, textToSend)
                 break
             case send.setTime:
-                sendChatsAtSetTimes(victimNames, phoneName, textToSend)
+                timesToSend = getTimes()
+                sendChatsAtSetTimes(timesToSend, victimNames, phoneName, textToSend)
                 break
             case send.spamThem:
                 spamChats(victimNames, phoneName, textToSend)
