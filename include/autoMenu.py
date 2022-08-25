@@ -269,7 +269,7 @@ def sendChatsAtSetTimes(timesToSend, victimNames, phoneName, textToSend):
                         pyautogui.click(pos[icon.cancel].x, pos[icon.cancel].y, interval=0.5)
                     if choice == "2":
                         time.sleep(60)
-    except pyautogui.FailSafeException or KeyboardInterrupt:
+    except (pyautogui.FailSafeException, KeyboardInterrupt):
         print("Stopping the program...")
 
 def autoSendChats():
@@ -350,7 +350,7 @@ def spamSnaps(victimName, phoneName):
                 time.sleep(speed[1])
                 pyautogui.click(pos[icon.send].x, pos[icon.send].y)
                 time.sleep(speed[2])
-        except pyautogui.FailSafeException or KeyboardInterrupt:
+        except (pyautogui.FailSafeException, KeyboardInterrupt):
             print("Stopping the spam to poor {}".format(victimName[0]))
     else:
         print("You can only spam to one user")
@@ -394,7 +394,7 @@ def sendSnapsAtSetTime(timesToSend : list, victimNames : list, phoneName : str):
                         time.sleep(2)
                     if choice == "2":
                         time.sleep(60)
-    except pyautogui.FailSafeException or KeyboardInterrupt:
+    except (pyautogui.FailSafeException, KeyboardInterrupt):
             print("Stopping the program...")
 
 def autoSendSnaps():
@@ -448,8 +448,13 @@ AutoSnap Options:
 2.) Auto send chats
 3.) Go back
     """)
+        while True:
+            try:
+                choice = int(input("Type in choice number: "))
+                break
+            except ValueError:
+                print("Please type in a vaild integer")
 
-        choice = int(input("Type in choice number: "))
         class Option:
             sendSnaps = 1
             sendChats = 2
