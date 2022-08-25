@@ -104,14 +104,25 @@ def removePhone():
         choice = 0
         while True:       
             listPhones()
-            choice = int(input("Choose a phone to remove: "))
+            while True:
+                try:
+                    choice = int(input("Choose a phone to remove: "))
+                    break
+                except ValueError:
+                    print("Please type in a valid integer")
+
             if choice < 1 or choice > len(phoneList):
                 print("Invaild choice. Choose a number between 1 and {}".format(str(len(phoneList))))
-            else:
+                continue
+
+            phoneName = phoneList[choice - 1]
+            phoneName = phoneName.strip()
+
+            confirm = input("Are you sure you want to remove {} (y/n): ".format(phoneName))
+            confirm = confirm.upper()
+            if confirm == "Y":
                 break
-        
-        phoneName = phoneList[choice - 1]
-        phoneName = phoneName.strip()
+    
         del phoneList[choice - 1]
 
         rmtree("phones/{}".format(phoneName))
@@ -155,10 +166,8 @@ Configure Phone Options:
                 addPhone()
             case Option.RemovePhone:
                 removePhone()
-                break
             case Option.ResetPhone:
                 print("Reset")
-                break
             case Option.GoBack:
                 print("Going Back")
                 break
