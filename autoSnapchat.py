@@ -4,7 +4,7 @@ from include.autoMenu import autoMenu
 def initText():
     print("""
 ##########################
-#AUTOSNAPCHAT VERSION 0.1#
+#AUTOSNAPCHAT VERSION 1.0#
 ##########################
 
 Made by Osmar Rojas/Crafterzilla
